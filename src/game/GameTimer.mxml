@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<game:Button xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx"
+		   creationComplete="onCreationComplete()"
+		   xmlns:game="game.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import flash.utils.Timer;
+			import flash.utils.getTimer;
+			
+			private const MASK:String = "00";
+			private const TIMER_INTERVAL:int = 1000;
+			
+			private var _timer:Timer;
+			private var _baseTimer:int;
+			
+			private function onCreationComplete():void
+			{
+				_timer = new Timer(TIMER_INTERVAL);
+				_timer.addEventListener(TimerEvent.TIMER, onTimer);
+			}
+			
+			private function onTimer(event:TimerEvent):void
+			{
+				var date:Date = new Date(getTimer() - _baseTimer);
+				var hours:String = (MASK + date.hoursUTC.toString()).substr(-MASK.length);
+				var minutes:String = (MASK + date.minutes.toString()).substr(-MASK.length);
+				var seconds:String = (MASK + date.seconds.toString()).substr(-MASK.length);
+				
+				labelText = "TIME:  " + hours + ":" + minutes + ":" + seconds;
+			}
+			
+			public function startTimer():void
+			{
+				_baseTimer = getTimer();
+				_timer.start()
+			}
+			
+			public function stopTimer():void
+			{
+				_timer.stop();
+			}
+			
+			public function continueTimer():void
+			{
+				_timer.start();
+			}
+			
+		]]>
+	</fx:Script>
+</game:Button>

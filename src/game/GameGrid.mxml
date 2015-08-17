@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="100%" height="100%"
+	styleName="gameGrid"
+	xmlns:game="game.*"
+	horizontalScrollPolicy="off"
+	verticalScrollPolicy="off">
+	<game:MainBoard id="mainBoard" imageSelected="onImageSelected(event)" imageHided="dispatchEvent(event.clone())"/>
+	<game:HConditionsGrid id="hConditionsGrid" x="{mainBoard.x + mainBoard.width + 0.013*width}" conditionRemoved="dispatchEvent(event.clone())"/>
+	<game:VConditionsGrid id="vConditionsGrid" y="{mainBoard.y + mainBoard.height + 0.115*height}" conditionRemoved="dispatchEvent(event.clone())"/>
+	
+	<game:GameTimer id="timer" x="{mainBoard.x + mainBoard.width - timer.width}" y="{mainBoard.y + mainBoard.height + 0.021*height}"/>
+	<game:Button id="fullScreen" labelText="Full Screen" y="{timer.y}" click="onFullScreenClick()"/>
+	<game:Button id="undo" labelText="Undo" y="{timer.y}"  x="{fullScreen.x + fullScreen.width + 0.0052*width}" click="onUndoSelected()"/>
+	<!--game:Button id="puzzleNumberLabel" labelText="{_puzzleNumber.toString()}" x="{fullScreen.x + fullScreen.width + 0.0052*width}" y="{timer.y}"/-->
+	
+	<mx:Metadata>
+		[Event(name="imageSelected", type="game.events.ImageSelectedEvent")]
+		[Event(name="undoSelected", type="game.events.GameEvent")]
+		[Event(name="conditionRemoved", type="game.events.ConditionRemovedEvent")]
+		[Event(name="imageHided", type="game.events.ImageHidedEvent")]
+	</mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			import game.events.GameEvent;
+			import game.events.ImageSelectedEvent;
+			
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			
+			[Bindable]
+			private var _puzzleNumber:int;
+			
+			public function resize(appWidth:Number, appHeight:Number):void
+			{
+				mainBoard.resize(appWidth, appHeight);
+				hConditionsGrid.resize(appWidth, appHeight);
+				vConditionsGrid.resize(appWidth, appHeight);
+				timer.resize(appWidth, appHeight);
+				fullScreen.resize(appWidth, appHeight);
+				undo.resize(appWidth, appHeight);
+//				puzzleNumberLabel.resize(appWidth, appHeight);
+			}
+			
+			private function onImageSelected(event:ImageSelectedEvent):void
+			{
+				this.dispatchEvent(event.clone());
+			}
+			
+			private function onUndoSelected():void
+			{
+				this.dispatchEvent(new GameEvent(GameEvent.UNDO));
+			}
+			
+			public function selectImage(imgNum:int, column:int):void
+			{
+				mainBoard.selectImage(imgNum, column);
+			}
+			
+			public function unselectImage(imgNum:int, index:int, column:int, columns:Array):void
+			{
+				mainBoard.unselectImage(imgNum, index, column, columns);
+			}
+			
+			public function addVerticalCondition(isRegular:Boolean, topImgNum:int, bottomImgNum:int, index:int):void
+			{
+				vConditionsGrid.addCondition(isRegular, topImgNum, bottomImgNum, index);
+			}
+			
+			public function addVerticalConditionAt(isRegular:Boolean, topImgNum:int, bottomImgNum:int, index:int):void
+			{
+				vConditionsGrid.addConditionAt(isRegular, topImgNum, bottomImgNum, index);
+			}
+			
+			public function addEmptyVerticalCondition():void
+			{
+				vConditionsGrid.addEmptyCondition();
+			}
+			
+			public function addHorizontalCondtion(	hasArraw:Boolean, middleImageType:int,
+													leftImgNum:int, middleImgNumb:int, rightImgNum:int, index:int):void
+			{
+				hConditionsGrid.addCondtion(hasArraw, middleImageType, leftImgNum, middleImgNumb, rightImgNum, index);
+			}
+			
+			public function addHorizontalConditionAt (	hasArraw:Boolean, middleImageType:int,
+														leftImgNum:int, middleImgNumb:int, rightImgNum:int, index:int):void
+			{
+				hConditionsGrid.addConditionAt(hasArraw, middleImageType, leftImgNum, middleImgNumb, rightImgNum, index);
+			}
+			
+			public function addEmptyHorizontalCondition():void
+			{
+				hConditionsGrid.addEmptyCondition();
+			}
+			
+			public function getSelectedImages():Array
+			{
+				return mainBoard.getSelectedImages();
+			}
+			
+			public function showImage(row:int, column:int, index:int):void
+			{
+				mainBoard.showImage(row, column, index);
+			}
+			
+			public function startTimer():void
+			{
+				timer.startTimer();
+			}
+			
+			public function stopTimer():void
+			{
+				timer.stopTimer();
+			}
+			
+			public function continueTimer():void
+			{
+				timer.continueTimer();
+			}
+			
+			[Bindabele]
+			public function set puzzleNumber(value:int):void
+			{
+				_puzzleNumber = value;
+			}
+			
+			public function get puzzleNumber():int
+			{
+				return _puzzleNumber;
+			}
+			
+			private function onFullScreenClick():void
+			{
+				FlexGlobals.topLevelApplication.percentWidth = 100;
+				FlexGlobals.topLevelApplication.percentHeight = 100;
+				FlexGlobals.topLevelApplication.stage.displayState = StageDisplayState.FULL_SCREEN;
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

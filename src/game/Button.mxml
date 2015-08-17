@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx"
+		   creationComplete="drawBackground()"
+		   resize="drawBackground()">
+	<mx:Label text="{labelText}" x="{PADDING_COEFF*_appWidth}" y="{PADDING_COEFF*_appWidth}" fontSize="{Math.min(0.01875*_appWidth, 0.0388*_appHeight)}"/>
+	<fx:Declarations>
+		<!-- Разместить невизуальные элементы (например, службы или объекты значений) -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			
+			private const PADDING_COEFF:Number = 0.0015625;
+			
+			[Bindable]
+			private var _appWidth:Number;
+			
+			[Bindable]
+			private var _appHeight:Number;
+			
+			[Bindable]
+			private var _labelText:String;
+			
+			public function resize(appWidth:Number, appHeight:Number):void
+			{
+				_appWidth = appWidth;
+				_appHeight = appHeight;
+				
+				drawBackground();
+			}
+			
+			[Bindable]
+			public function set labelText(value:String):void
+			{
+				_labelText = value;
+			}
+			
+			public function get labelText():String
+			{
+				return _labelText;
+			}
+			
+			private function drawBackground():void
+			{
+				graphics.clear();
+				graphics.beginFill(0xfffdfe);
+				graphics.drawRect(0, 0, width, height);
+				graphics.endFill();
+				
+				graphics.beginFill(0x555555);
+				graphics.drawRect(PADDING_COEFF*_appWidth, PADDING_COEFF*_appWidth, width - 2*PADDING_COEFF*_appWidth, height - 2*PADDING_COEFF*_appWidth);
+				graphics.endFill();
+			}
+
+		]]>
+	</fx:Script>
+</mx:Canvas>

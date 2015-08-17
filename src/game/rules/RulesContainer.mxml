@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx"
+		   creationComplete="drawBackground()"
+		   resize="drawBackground()"
+		   xmlns:rules="game.rules.*">
+	<rules:Page1 fontSize="{width*0.025}"/>
+	<mx:HBox id="buttonsContainer" width="100%" y="{height - buttonsContainer.height - 8}">
+		<s:Spacer width="100%"/>
+		<rules:Button text="Назад"/>
+		<rules:Button text="Вперед"/>
+		<rules:Button text="Выход" click="dispatchEvent(new GameEvent(GameEvent.EXIT))"/>
+		<s:Spacer width="3"/>
+	</mx:HBox>
+	
+	<fx:Metadata>
+		[Event(name="exit", type="game.events.GameEvent")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import game.events.GameEvent;
+			private function drawBackground():void
+			{
+				graphics.clear();
+				graphics.beginFill(0x555555);
+				graphics.drawRect(0, 0, width, height);
+				graphics.endFill();
+			}
+		]]>
+	</fx:Script>
+</mx:Canvas>

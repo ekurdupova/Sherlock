@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 styleName="hConditionsGrid"
+		 paddingLeft="{0.003125*_appWidth}"
+		 paddingRight="{0.003125*_appWidth}"
+		 paddingTop="{0.006397*_appHeight}"
+		 paddingBottom="{0.006397*_appHeight}">
+	<mx:VBox id="column1"/>
+	<mx:VBox id="column2"/>
+	<mx:VBox id="column3"/>
+	
+	<mx:Metadata>
+		[Event(name="conditionRemoved", type="game.events.ConditionRemovedEvent")]
+	</mx:Metadata>
+
+<mx:Script>
+	<![CDATA[
+		import game.conditions.Condition;
+		import game.conditions.HCondition;
+		import game.conditions.HEmptyCondition;
+		import game.conditions.VCondition;
+		import game.events.ConditionRemovedEvent;
+		
+		[Bindable]
+		private var _appWidth:Number;
+		
+		[Bindable]
+		private var _appHeight:Number;
+		
+		public function addCondtion(hasArrow:Boolean, middleImageType:int,
+									leftImageNumber:int, middleImageNumber:int, rightImageNumber:int,
+									index:int):void
+		{
+			var condition:HCondition = new HCondition(	hasArrow, middleImageType,
+														leftImageNumber, middleImageNumber, rightImageNumber,
+														index, _appWidth, _appHeight);
+			condition.addEventListener("rightClick", onConditionRightClick);
+			
+			addConditionToContainer(condition);
+		}
+		
+		public function addConditionAt(hasArrow:Boolean, middleImageType:int,
+										leftImageNumber:int, middleImageNumber:int, rightImageNumber:int,
+										index:int):void
+		{
+			var column:VBox;
+			if (index >= 0 && index < 7)
+			{
+				column = column1;
+			}
+			else if (index >= 7 && index < 14)
+			{
+				column = column2;
+			}
+			else
+			{
+				column = column3;
+			}
+			
+			var condition:HCondition = new HCondition(	hasArrow, middleImageType,
+														leftImageNumber, middleImageNumber, rightImageNumber,
+														index, _appWidth, _appHeight);
+			condition.addEventListener("rightClick", onConditionRightClick);
+			
+			var childIndex:int = index % 7;
+			column.removeChildAt(childIndex);
+			column.addChildAt(condition, childIndex);
+		}
+		
+		public function addEmptyCondition():void
+		{
+			var condition:HEmptyCondition = new HEmptyCondition(_appWidth, _appHeight);
+			
+			addConditionToContainer(condition);
+		}
+		
+		public function resize(appWidth:Number, appHeight:Number):void
+		{
+			_appWidth = appWidth;
+			_appHeight = appHeight;
+			
+			resizeColumn(column1);
+			resizeColumn(column2);
+			resizeColumn(column3);
+		}
+		
+		private function addConditionToContainer(condition:HCondition):void
+		{
+			if (column1.numChildren < 7)
+			{
+				column1.addChild(condition);
+			}
+			else if (column2.numChildren < 7)
+			{
+				column2.addChild(condition);
+			}
+			else
+			{
+				column3.addChild(condition);
+			}
+		}
+		
+		private function onConditionRightClick(event:MouseEvent):void
+		{
+			var condition:HCondition = HCondition(event.currentTarget);
+			condition.removeEventListener("rightClick", onConditionRightClick);
+			
+			var conditionParent:VBox;
+			if (column1.contains(condition))
+			{
+				conditionParent = column1;
+			}
+			else if (column2.contains(condition))
+			{
+				conditionParent = column2;
+			}
+			else
+			{
+				conditionParent = column3;
+			}
+			
+			var index:int = conditionParent.getChildIndex(condition);
+			conditionParent.removeChild(condition);
+			
+			conditionParent.addChildAt(new HEmptyCondition(_appWidth, _appHeight), index);
+			dispatchEvent(new ConditionRemovedEvent(ConditionRemovedEvent.CONDITION_REMOVED, false, condition.index));
+		}
+		
+		private function resizeColumn(column:VBox):void
+		{
+			for (var i:int = 0; i < column.numChildren; ++i)
+			{
+				var item:Object = column.getChildAt(i);
+				if (item is Condition)
+				{
+					var condition:Condition = item as Condition;
+					condition.resize(_appWidth, _appHeight);
+				}
+			}
+		}
+	]]>
+</mx:Script>
+	
+</mx:HBox>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 styleName="vConditionsGrid"
+		 paddingLeft="{0.001042*_appWidth}"
+		 paddingRight="{0.001042*_appWidth}"
+		 paddingTop="{0.003198*_appHeight}"
+		 paddingBottom="{0.003198*_appHeight}"
+		 horizontalGap="{0.004167*_appWidth}">
+	
+	<mx:Metadata>
+		[Event(name="conditionRemoved", type="game.events.ConditionRemovedEvent")]
+	</mx:Metadata>
+
+<mx:Script>
+	<![CDATA[
+		import game.conditions.Condition;
+		import game.conditions.VCondition;
+		import game.conditions.VEmptyCondition;
+		import game.conditions.VNegativeCondition;
+		import game.events.ConditionRemovedEvent;
+		
+		[Bindable]
+		private var _appWidth:Number;
+		
+		[Bindable]
+		private var _appHeight:Number;
+		
+		public function addCondition(isRegular:Boolean, topImgNum:int, bottomImgNum:int, index:int):void
+		{
+			var condition:VCondition = createCondition(isRegular, topImgNum, bottomImgNum, index);
+			
+			addChild(condition);
+		}
+
+		public function addConditionAt(isRegular:Boolean, topImgNum:int, bottomImgNum:int, index:int):void
+		{
+			var condition:VCondition = createCondition(isRegular, topImgNum, bottomImgNum, index);
+			
+			removeChildAt(index);
+			addChildAt(condition, index);
+		}
+		
+		public function addEmptyCondition(index:int = -1):void
+		{
+			var condition:VEmptyCondition = new VEmptyCondition(_appWidth, _appHeight);
+			
+			if (index == -1)
+			{
+				addChild(condition);
+			}
+			else
+			{
+				addChildAt(condition, index);
+			}
+		}
+		
+		public function resize(appWidth:Number, appHeight:Number):void
+		{
+			_appWidth = appWidth;
+			_appHeight = appHeight;
+			
+			for (var i:int = 0; i < numChildren; ++i)
+			{
+				var item:Object = getChildAt(i);
+				if (item is Condition)
+				{
+					var condition:Condition = item as Condition;
+					condition.resize(appWidth, appHeight);
+				}
+			}
+		}
+		
+		private function createCondition(isRegular:Boolean, topImgNum:int, bottomImgNum:int, index:int):VCondition
+		{
+			var condition:VCondition;
+			
+			if (isRegular)
+			{
+				condition = new VCondition(topImgNum, bottomImgNum, index, _appWidth, _appHeight);
+			}
+			else
+			{
+				condition = new VNegativeCondition(topImgNum, bottomImgNum, index, _appWidth, _appHeight);
+			}
+			
+			condition.addEventListener("rightClick", onConditionRightClick);
+			
+			return condition;
+		}
+		
+		private function onConditionRightClick(event:MouseEvent):void
+		{
+			var condition:VCondition = VCondition(event.currentTarget);
+			condition.removeEventListener("rightClick", onConditionRightClick);
+			
+			var index:int = getChildIndex(condition);
+			removeChild(condition);
+			addEmptyCondition(index);
+			
+			dispatchEvent(new ConditionRemovedEvent(ConditionRemovedEvent.CONDITION_REMOVED, true, condition.index));
+		}
+	]]>
+</mx:Script>
+</mx:HBox>

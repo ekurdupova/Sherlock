@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+		   width="{imageContainer.width}" height="{imageContainer.height}" creationComplete="onCreationComplete()"
+		   horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Canvas id="imageContainer" width="{(3*IMAGE_WIDTH_COEFF + 2*IMAGE_HORIZONTAL_GAP_COEFF)*_appWidth}"
+			   height="{(2*IMAGE_HEIGHT_COEFF + IMAGE_VERTICAL_GAP_COEFF)*_appHeight}"
+			   horizontalScrollPolicy="off" verticalScrollPolicy="off"/>
+
+	<mx:Metadata>
+		[Event(name="imageSelected", type="game.events.ImageSelectedEvent")]
+		[Event(name="imageHided", type="game.events.ImageHidedEvent")]
+	</mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			import flash.events.MouseEvent;
+			
+			import game.events.ImageHidedEvent;
+			import game.events.ImageSelectedEvent;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.controls.Image;
+			import mx.core.Application;
+			import mx.core.FlexGlobals;
+			import mx.core.UIComponent;
+			
+			protected var numberByImage:Dictionary = new Dictionary();
+			protected var imageByNumber:Dictionary = new Dictionary();
+			
+			private const IMAGE_VERTICAL_GAP_COEFF:Number = 0.003;
+			private const IMAGE_HORIZONTAL_GAP_COEFF:Number = 0.0016
+			private const IMAGE_WIDTH_COEFF:Number = 0.026;
+			private const IMAGE_HEIGHT_COEFF:Number = 0.053;
+			
+			private var _selectedImgNumber:int = -1;
+			
+			[Bindable]
+			private var _appWidth:Number;
+			
+			[Bindable]
+			private var _appHeight:Number;
+			
+			protected function onCreationComplete():void
+			{
+				drawBackground();
+				drawFrame(imageContainer.width/2, imageContainer.height/2, 0.002083*_appWidth);
+			}
+			
+			public function hideImage(imgNumber:int):int
+			{
+				var image:Image = imageByNumber[imgNumber];
+				if (imageContainer.contains(image) && image.visible)
+				{
+					image.visible = false;
+					return imageContainer.getChildIndex(image);
+				}
+				
+				return -1;
+			}
+			
+			public function selectImage(imgNumber:int):void
+			{
+				var image:Image = imageByNumber[imgNumber];
+				
+				if (image == null)
+					return;
+				
+				_selectedImgNumber = numberByImage[image];
+				
+				var index:int = imageContainer.getChildIndex(image);
+					
+				imageContainer.visible = false;
+				
+				image.removeEventListener(MouseEvent.CLICK, onImageMouseClick);
+				image.removeEventListener("rightClick", onImageMouseRightClick);
+				
+				resizeImage();
+				
+				addChild(image);
+				
+				this.dispatchEvent(new ImageSelectedEvent(_selectedImgNumber, index, -1, null));
+			}
+			
+			public function unselectImage(index:int):void
+			{
+				var image:Image = imageByNumber[_selectedImgNumber];
+				
+				imageContainer.addChildAt(image, index);
+				
+				resizeSmallImage(image, _selectedImgNumber % 10);
+				
+				image.addEventListener(MouseEvent.CLICK, onImageMouseClick);
+				image.addEventListener("rightClick", onImageMouseRightClick);
+				
+				imageContainer.visible = true;
+				
+				_selectedImgNumber = -1;
+			}
+			
+			public function showImage(index:int):void
+			{
+				imageContainer.getChildAt(index).visible = true;
+			}
+			
+			public function get selectedImageNumber():int
+			{
+				return _selectedImgNumber;
+			}
+			
+			public function resize(appWidth:Number, appHeight:Number):void
+			{
+				_appWidth = appWidth;
+				_appHeight = appHeight;
+				
+				graphics.clear();
+				drawBackground();
+				drawFrame(imageContainer.width/2, imageContainer.height/2, 0.002083*appWidth);
+				resizeImage();
+				resizeImagesInRow();
+			}
+		
+			protected function addImageToRow(cls:Class, number:int):void
+			{
+				var image:Image = new Image();
+				image.source = new cls();
+				image.addEventListener(MouseEvent.CLICK, onImageMouseClick);
+				image.addEventListener("rightClick", onImageMouseRightClick);
+
+				resizeSmallImage(image, imageContainer.numChildren);
+				imageContainer.addChild(image);
+				
+				imageByNumber[number] = image;
+				numberByImage[image] = number;
+			}
+			
+			private function onImageMouseClick(event:MouseEvent):void
+			{
+				var image:Image = Image(event.currentTarget);
+				
+				selectImage(numberByImage[image]);
+			}
+			
+			private function onImageMouseRightClick(event:MouseEvent):void
+			{
+				var image:UIComponent = UIComponent(event.currentTarget);
+				image.visible = false;
+				dispatchEvent(new ImageHidedEvent(ImageHidedEvent.IMAGE_HIDED, -1, -1, imageContainer.getChildIndex(image)));
+			}
+			
+			private function resizeImage():void
+			{
+				if (_selectedImgNumber == -1)
+					return;
+				
+				var image:Image = imageByNumber[_selectedImgNumber];
+				
+				var size:int = Math.min(width, height);
+				image.width = width;
+				image.height = height;
+				image.x = (width - size)/2;
+				image.y = (height - size)/2;
+			}
+			
+			private function resizeImagesInRow():void
+			{
+				for (var i:int; i < imageContainer.numChildren; ++i)
+				{
+					var item:Object = imageContainer.getChildAt(i);
+					if (item is Image)
+					{
+						resizeSmallImage(item as Image, numberByImage[item] % 10);
+					}
+				}
+			}
+			
+			private function resizeSmallImage(image:Image, index:int):void
+			{
+				image.width = IMAGE_WIDTH_COEFF*_appWidth;
+				image.height = IMAGE_HEIGHT_COEFF*_appHeight;
+				image.x = (image.width + IMAGE_HORIZONTAL_GAP_COEFF*_appWidth)*(index % 3);
+				image.y = (image.height + IMAGE_VERTICAL_GAP_COEFF*_appHeight)*Math.floor(index/3);
+			}
+			
+			private function drawBackground():void
+			{
+				var size:int = Math.min(imageContainer.width, imageContainer.height);
+				
+				graphics.beginFill(0x555555);
+				graphics.drawRect((imageContainer.width - size)/2, (imageContainer.height - size)/2, size, size);
+				graphics.endFill();
+			}
+			
+			private function drawFrame(centerX:int, centerY:int, thickness:int):void
+			{
+				var size:int = Math.min(imageContainer.width, imageContainer.height);
+				const padding:Number = 0.002083*_appWidth;
+				
+				graphics.beginFill(0xaaaaaa);
+				graphics.drawRect(centerX - size/2 + padding,
+					centerY - size/2 +padding,
+					size - 2*padding,
+					size - 2*padding);
+				graphics.drawRect(centerX - size/2 + padding + thickness,
+					centerY - size/2 + padding + thickness,
+					size - 2*padding - 2*thickness,
+					size - 2*padding - 2*thickness);
+				graphics.endFill();
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

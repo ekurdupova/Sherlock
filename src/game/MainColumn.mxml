@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 styleName="mainColumn"
+		 paddingLeft="{0.0015625*_appWidth}"
+		 paddingRight="{0.0015625*_appWidth}"
+		 verticalGap="{0.002132*_appHeight}"
+		 paddingTop="{0.003198*_appHeight}"
+		 paddingBottom="{0.003198*_appHeight}"
+		 xmlns:game="game.*">
+	<game:PersonCeil id="personCeil" imageSelected="onImageSelected(event)" imageHided="dispatchImageHidedEvent(event, 0)"/>
+	<game:HouseCeil id="houseCeil" imageSelected="onImageSelected(event)" imageHided="dispatchImageHidedEvent(event, 1)"/>
+	<game:NumberCeil id="numberCeil" imageSelected="onImageSelected(event)" imageHided="dispatchImageHidedEvent(event, 2)"/>
+	<game:FruitCeil id="fruitCeil" imageSelected="onImageSelected(event)" imageHided="dispatchImageHidedEvent(event, 3)"/>
+	<game:TransportCeil id="transportCeil" imageSelected="onImageSelected(event)" imageHided="dispatchImageHidedEvent(event, 4)"/>
+	<game:CharacterCeil id="characterCeil" imageSelected="onImageSelected(event)" imageHided="dispatchImageHidedEvent(event, 5)"/>
+	
+	<mx:Metadata>
+		[Event(name="imageSelected", type="game.events.ImageSelectedEvent")]
+		[Event(name="imageHided", type="game.events.ImageHidedEvent")]
+	</mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			import game.events.ImageHidedEvent;
+			import game.events.ImageSelectedEvent;
+			
+			[Bindable]
+			private var _appWidth:Number;
+			
+			[Bindable]
+			private var _appHeight:Number;
+			
+			private function onImageSelected(event:ImageSelectedEvent):void
+			{
+				this.dispatchEvent(event.clone());
+			}
+			
+			public function hideImage(imgNumber:int):int
+			{
+				return getCeilByNumber(Math.floor(imgNumber/10)).hideImage(imgNumber);
+			}
+			
+			public function selectImage(imgNumber:int):void
+			{
+				getCeilByNumber(Math.floor(imgNumber/10)).selectImage(imgNumber);
+			}
+			
+			public function unselectImage(imgNumber:int, index:int):void
+			{
+				getCeilByNumber(Math.floor(imgNumber/10)).unselectImage(index);
+			}
+			
+			public function showImage(row:int, index:int):void
+			{
+				getCeilByNumber(row).showImage(index);
+			}
+			
+			public function getSelectedImages():Array
+			{
+				var result:Array = new Array(6);
+				
+				result[0] = personCeil.selectedImageNumber;
+				result[1] = houseCeil.selectedImageNumber;
+				result[2] = numberCeil.selectedImageNumber;
+				result[3] = fruitCeil.selectedImageNumber;
+				result[4] = transportCeil.selectedImageNumber;
+				result[5] = characterCeil.selectedImageNumber;
+				
+				return result;
+			}
+			
+			public function resize(appWidth:Number, appHeight:Number):void
+			{
+				_appWidth = appWidth;
+				_appHeight = appHeight;
+				
+				personCeil.resize(appWidth, appHeight);
+				houseCeil.resize(appWidth, appHeight);
+				numberCeil.resize(appWidth, appHeight);
+				fruitCeil.resize(appWidth, appHeight);
+				transportCeil.resize(appWidth, appHeight);
+				characterCeil.resize(appWidth, appHeight);
+			}
+			
+			private function getCeilByNumber(num:int):Ceil
+			{
+				var ceil:Ceil;
+				
+				switch (num)
+				{
+					case 0:
+					{
+						ceil = personCeil;
+						break;
+					}
+					case 1:
+					{
+						ceil = houseCeil;
+						break;
+					}
+					case 2:
+					{
+						ceil = numberCeil;
+						break;
+					}
+					case 3:
+					{
+						ceil = fruitCeil;
+						break;
+					}
+					case 4:
+					{
+						ceil = transportCeil;
+						break;
+					}
+					case 5:
+					{
+						ceil = characterCeil;
+						break;
+					}
+				}
+				
+				return ceil;
+			}
+			
+			private function dispatchImageHidedEvent(event:ImageHidedEvent, row:int):void
+			{
+				dispatchEvent(new ImageHidedEvent(ImageHidedEvent.IMAGE_HIDED, row, -1, event.index));
+			}
+		]]>
+	</mx:Script>
+</mx:VBox>

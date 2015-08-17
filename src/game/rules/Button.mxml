@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx"
+		   creationComplete="drawBackground()"
+		   resize="drawBackground()"
+		   width="{textLabel.width + PADDING*2}" height="{textLabel.height + PADDING*2}">
+	<s:Label id="textLabel" text="{_text}"
+			 fontSize="20" x="{PADDING}" y="{PADDING}"/>
+	
+	<fx:Script>
+		<![CDATA[
+			
+			private const PADDING:int = 3;
+			
+			[Bindable]
+			private var _text:String;
+			
+			public function set text(value:String):void
+			{
+				_text = value;
+			}
+			
+			public function get text():String
+			{
+				return _text;
+			}
+			
+			private function drawBackground():void
+			{
+				graphics.clear();
+				graphics.beginFill(0xa9a9a9);
+				graphics.drawRect(0, 0, width, height)
+				graphics.endFill();
+			}
+		]]>
+	</fx:Script>
+</mx:Canvas>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+		   xmlns:menu="game.menu.*"
+		   styleName="menu"
+		   width="100%" height="100%">
+	<mx:HBox width="100%" height="100%"
+			 horizontalAlign="center" verticalAlign="middle"
+			 horizontalGap="15">
+		<menu:MenuButton text="Играть" click="onPlayClick()"/>
+		<menu:MenuButton text="Как играть" click="onHowToPlayClicked()"/>
+	</mx:HBox>
+	
+	<mx:Metadata>
+		[Event(name="playButtonClicked", type="game.events.MenuEvent")]
+		[Event(name="howToPlayClicked", type="game.events.MenuEvent")]
+	</mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			import game.events.MenuEvent;
+			
+			private function onPlayClick():void
+			{
+				dispatchEvent(new MenuEvent(MenuEvent.PLAY_BUTTON_CLICKED));
+			}
+			
+			private function onHowToPlayClicked():void
+			{
+				dispatchEvent(new MenuEvent(MenuEvent.HOW_TO_PLAY_CLICKED));
+			}
+		]]>
+	</mx:Script>
+	
+</mx:Canvas>

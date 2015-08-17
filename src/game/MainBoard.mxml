@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 styleName="mainBoard"
+		 paddingLeft="{0.0015625*_appWidth}"
+		 paddingRight="{0.0015625*_appWidth}"
+		 paddingTop="{0.003198*_appHeight}"
+		 paddingBottom="{0.003198*_appHeight}"
+		 horizontalGap="{0.00417*_appWidth}"
+		 xmlns:game="game.*">
+	<game:MainColumn id="column0" imageSelected="onImageSelected(event, 0)" imageHided="dispatchImageHidedEvent(event, 0)"/>
+	<game:MainColumn id="column1" imageSelected="onImageSelected(event, 1)" imageHided="dispatchImageHidedEvent(event, 1)"/>
+	<game:MainColumn id="column2" imageSelected="onImageSelected(event, 2)" imageHided="dispatchImageHidedEvent(event, 2)"/>
+	<game:MainColumn id="column3" imageSelected="onImageSelected(event, 3)" imageHided="dispatchImageHidedEvent(event, 3)"/>
+	<game:MainColumn id="column4" imageSelected="onImageSelected(event, 4)" imageHided="dispatchImageHidedEvent(event, 4)"/>
+	<game:MainColumn id="column5" imageSelected="onImageSelected(event, 5)" imageHided="dispatchImageHidedEvent(event, 5)"/>
+	
+	<mx:Metadata>
+		[Event(name="imageSelected", type="game.events.ImageSelectedEvent")]
+		[Event(name="imageHided", type="game.events.ImageHidedEvent")]
+	</mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			import game.events.ImageHidedEvent;
+			import game.events.ImageSelectedEvent;
+			
+			[Bindable]
+			private var _appWidth:Number;
+			
+			[Bindable]
+			private var _appHeight:Number;
+			
+			private function onImageSelected(event:ImageSelectedEvent, column:int):void
+			{
+				var columns:Array = hideImage(event.imageNumber);
+
+				this.dispatchEvent(new ImageSelectedEvent(event.imageNumber, event.index, column, columns));
+			}
+			
+			public function selectImage(imgNum:int, column:int):void
+			{
+				getColumnByNumber(column).selectImage(imgNum);
+			}
+			
+			/**
+			 * columns contains number of columns whre the image should unhided
+			 */
+			public function unselectImage(imgNum:int, index:int, column:int, columns:Array):void
+			{
+				var row:int = Math.floor(imgNum/10);
+				var index:int = imgNum % 10;
+				
+				for (var i:int = 0; i < columns.length; ++i)
+				{
+					getColumnByNumber(columns[i][0]).showImage(row, columns[i][1]);
+				}
+				
+				getColumnByNumber(column).unselectImage(imgNum, index);
+			}
+			
+			public function showImage(row:int, column:int, index:int):void
+			{
+				getColumnByNumber(column).showImage(row, index);
+			}
+			
+			public function getSelectedImages():Array
+			{
+				var result:Array = new Array(6);
+				
+				result[0] = column0.getSelectedImages();
+				result[1] = column1.getSelectedImages();
+				result[2] = column2.getSelectedImages();
+				result[3] = column3.getSelectedImages();
+				result[4] = column4.getSelectedImages();
+				result[5] = column5.getSelectedImages();
+				
+				return result;
+			}
+			
+			public function resize(appWidth:Number, appHeight:Number):void
+			{
+				_appWidth = appWidth;
+				_appHeight = appHeight;
+				
+				column0.resize(appWidth, appHeight);
+				column1.resize(appWidth, appHeight);
+				column2.resize(appWidth, appHeight);
+				column3.resize(appWidth, appHeight);
+				column4.resize(appWidth, appHeight);
+				column5.resize(appWidth, appHeight);
+			}
+			
+			private function hideImage(imgNumber:int):Array
+			{
+				var result:Array = [];
+				
+				var index:int;
+				index = column0.hideImage(imgNumber);
+				if (index != -1)
+				{
+					result.push([0, index]);
+				}
+				
+				index = column1.hideImage(imgNumber);
+				if (index != -1)
+				{
+					result.push([1, index]);
+				}
+				
+				index = column2.hideImage(imgNumber);
+				if (index != -1)
+				{
+					result.push([2, index]);
+				}
+				
+				index = column3.hideImage(imgNumber);
+				if (index != -1)
+				{
+					result.push([3, index]);
+				}
+				
+				index = column4.hideImage(imgNumber);
+				if (index != -1)
+				{
+					result.push([4, index]);
+				}
+				
+				index = column5.hideImage(imgNumber);
+				if (index != -1)
+				{
+					result.push([5, index]);
+				}
+				
+				return result;
+			}
+			
+			private function getColumnByNumber(num:int):MainColumn
+			{
+				var column:MainColumn = null;
+				switch (num)
+				{
+					case 0:
+					{
+						column = column0;
+						break;
+					}
+					case 1:
+					{
+						column = column1;
+						break;
+					}
+					case 2:
+					{
+						column = column2;
+						break;
+					}
+					case 3:
+					{
+						column = column3;
+						break;
+					}
+					case 4:
+					{
+						column = column4;
+						break;
+					}
+					case 5:
+					{
+						column = column5;
+						break;
+					}
+				}
+				
+				return column;
+			}
+			
+			private function dispatchImageHidedEvent(event:ImageHidedEvent, column:int):void
+			{
+				dispatchEvent(new ImageHidedEvent(ImageHidedEvent.IMAGE_HIDED, event.row, column, event.index));
+			}
+		]]>
+	</mx:Script>
+</mx:HBox>

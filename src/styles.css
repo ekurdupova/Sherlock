@@ -1,0 +1,44 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+mx|Button.menuButton
+{
+	backgroundColor		: #000000;
+}
+
+mx|Canvas.gameGrid
+{
+	backgroundColor		: #01aaff;
+}
+
+mx|Canvas.menu
+{
+	backgroundColor		: #000000;
+}
+
+mx|HBox.mainBoard
+{
+	background-color	: #fefefe;
+}
+
+mx|HBox.vConditionsGrid
+{
+	background-color	: #000000;
+	vertical-align		: middle;
+}
+
+mx|HBox.hConditionsGrid
+{
+	background-color	: #000000;
+}
+
+mx|VBox.mainColumn
+{
+	background-color	: #000000;
+}
+
+mx|Text.rules
+{
+	color				: #f0f64e;
+}
