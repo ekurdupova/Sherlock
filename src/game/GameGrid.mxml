@@ -8,10 +8,13 @@
 	<game:MainBoard id="mainBoard" imageSelected="onImageSelected(event)" imageHided="dispatchEvent(event.clone())"/>
 	<game:HConditionsGrid id="hConditionsGrid" x="{mainBoard.x + mainBoard.width + 0.013*width}" conditionRemoved="dispatchEvent(event.clone())"/>
 	<game:VConditionsGrid id="vConditionsGrid" y="{mainBoard.y + mainBoard.height + 0.115*height}" conditionRemoved="dispatchEvent(event.clone())"/>
+	<game:HOtherCluesGrid id="hOtherCluesGrid" x="{hConditionsGrid.x}" y="{hConditionsGrid.y}" width="{hConditionsGrid.width}" height="{hConditionsGrid.height}" visible="false"/>
+	<game:VOtherCluesGrid id="vOtherCluesGrid" x="{vConditionsGrid.x}" y="{vConditionsGrid.y}" width="{vConditionsGrid.width}" height="{vConditionsGrid.height}" visible="false"/>
 	
 	<game:GameTimer id="timer" x="{mainBoard.x + mainBoard.width - timer.width}" y="{mainBoard.y + mainBoard.height + 0.021*height}"/>
 	<game:Button id="fullScreen" labelText="Full Screen" y="{timer.y}" click="onFullScreenClick()"/>
 	<game:Button id="undo" labelText="Undo" y="{timer.y}"  x="{fullScreen.x + fullScreen.width + 0.0052*width}" click="onUndoSelected()"/>
+	<game:Button id="otherClues" labelText="Other clues" y="{timer.y}" x="{undo.x + undo.width + 0.0052*width}" click="onOtherCluesSelected()"/>
 	<!--game:Button id="puzzleNumberLabel" labelText="{_puzzleNumber.toString()}" x="{fullScreen.x + fullScreen.width + 0.0052*width}" y="{timer.y}"/-->
 	
 	<mx:Metadata>
@@ -37,9 +40,12 @@
 				mainBoard.resize(appWidth, appHeight);
 				hConditionsGrid.resize(appWidth, appHeight);
 				vConditionsGrid.resize(appWidth, appHeight);
+				hOtherCluesGrid.resize(appWidth, appHeight);
+				vOtherCluesGrid.resize(appWidth, appHeight);
 				timer.resize(appWidth, appHeight);
 				fullScreen.resize(appWidth, appHeight);
 				undo.resize(appWidth, appHeight);
+				otherClues.resize(appWidth, appHeight);
 //				puzzleNumberLabel.resize(appWidth, appHeight);
 			}
 			
@@ -51,6 +57,20 @@
 			private function onUndoSelected():void
 			{
 				this.dispatchEvent(new GameEvent(GameEvent.UNDO));
+			}
+			
+			private function onOtherCluesSelected():void
+			{
+				if (hOtherCluesGrid.visible)
+				{
+					hOtherCluesGrid.visible = false;
+					vOtherCluesGrid.visible = false;
+				}
+				else
+				{
+					hOtherCluesGrid.visible = true;
+					vOtherCluesGrid.visible = true;
+				}
 			}
 			
 			public function selectImage(imgNum:int, column:int):void
@@ -93,6 +113,37 @@
 			public function addEmptyHorizontalCondition():void
 			{
 				hConditionsGrid.addEmptyCondition();
+			}
+			
+			public function addEmptyVerticalOtherClue():void
+			{
+				vOtherCluesGrid.addEmptyCondition();
+			}
+			
+			public function addEmptyHorizontalOtherClue():void
+			{
+				hOtherCluesGrid.addEmptyCondition();
+			}
+			
+			public function addHorizontalOtherClue(hasArrow:Boolean, middleImageType:int,
+													leftImgNum:int, middleImgNumb:int, rightImgNum:int):void
+			{
+				hOtherCluesGrid.addClue(hasArrow, middleImageType, leftImgNum, middleImgNumb, rightImgNum);
+			}
+			
+			public function removeHorizontalOtherClue():void
+			{
+				hOtherCluesGrid.removeClue();
+			}
+			
+			public function addVerticalOtherClue(isRegular:Boolean, topImgNum:int, bottomImgNum:int):void
+			{
+				vOtherCluesGrid.addClue(isRegular, topImgNum, bottomImgNum);
+			}
+			
+			public function removeVerticalOtherClue():void
+			{
+				vOtherCluesGrid.removeClue();
 			}
 			
 			public function getSelectedImages():Array

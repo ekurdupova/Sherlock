@@ -27,6 +27,7 @@
 		[Bindable]
 		private var _appHeight:Number;
 		
+		// TODO: rename hasArraw to has Arrow
 		public function addCondtion(hasArrow:Boolean, middleImageType:int,
 									leftImageNumber:int, middleImageNumber:int, rightImageNumber:int,
 									index:int):void
@@ -43,28 +44,12 @@
 										leftImageNumber:int, middleImageNumber:int, rightImageNumber:int,
 										index:int):void
 		{
-			var column:VBox;
-			if (index >= 0 && index < 7)
-			{
-				column = column1;
-			}
-			else if (index >= 7 && index < 14)
-			{
-				column = column2;
-			}
-			else
-			{
-				column = column3;
-			}
-			
 			var condition:HCondition = new HCondition(	hasArrow, middleImageType,
-														leftImageNumber, middleImageNumber, rightImageNumber,
-														index, _appWidth, _appHeight);
+				leftImageNumber, middleImageNumber, rightImageNumber,
+				index, _appWidth, _appHeight);
 			condition.addEventListener("rightClick", onConditionRightClick);
 			
-			var childIndex:int = index % 7;
-			column.removeChildAt(childIndex);
-			column.addChildAt(condition, childIndex);
+			addConditionToContainerAt(condition, index);
 		}
 		
 		public function addEmptyCondition():void
@@ -84,13 +69,20 @@
 			resizeColumn(column3);
 		}
 		
+		protected function addEmptyConditionAt(index:int):void
+		{
+			var condition:HEmptyCondition = new HEmptyCondition(_appWidth, _appHeight);
+			
+			addConditionToContainerAt(condition, index);
+		}
+		
 		private function addConditionToContainer(condition:HCondition):void
 		{
 			if (column1.numChildren < 7)
 			{
 				column1.addChild(condition);
 			}
-			else if (column2.numChildren < 7)
+			else if (column2.numChildren < 7)	// move 7 to const
 			{
 				column2.addChild(condition);
 			}
@@ -98,6 +90,27 @@
 			{
 				column3.addChild(condition);
 			}
+		}
+		
+		private function addConditionToContainerAt(condition:HCondition, index:int):void
+		{
+			var column:VBox;
+			if (index >= 0 && index < 7)
+			{
+				column = column1;
+			}
+			else if (index >= 7 && index < 14)
+			{
+				column = column2;
+			}
+			else
+			{
+				column = column3;
+			}
+			
+			var childIndex:int = index % 7;
+			column.removeChildAt(childIndex);
+			column.addChildAt(condition, childIndex);
 		}
 		
 		private function onConditionRightClick(event:MouseEvent):void

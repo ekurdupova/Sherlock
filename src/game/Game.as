@@ -40,7 +40,7 @@ package game
 			_gameGrid.addEventListener(FlexEvent.CREATION_COMPLETE, onGameGridCreationComplete);
 			_gameGrid.addEventListener(ImageSelectedEvent.IMAGE_SELECTED, onImageSelected);
 			_gameGrid.addEventListener(GameEvent.UNDO, onUndoSelected);
-			_gameGrid.addEventListener(ConditionRemovedEvent.CONDITION_REMOVED, redispatchEvent);
+			_gameGrid.addEventListener(ConditionRemovedEvent.CONDITION_REMOVED, onConditionRemoved);
 			_gameGrid.addEventListener(ImageHidedEvent.IMAGE_HIDED, redispatchEvent);
 			scene.addChild(_gameGrid);
 		}
@@ -58,16 +58,18 @@ package game
 			}
 		}
 		
-		public function showVerticalCondition(index:int):void
+		public function restoreVerticalCondition(index:int):void
 		{
 			var vItem:Array = _gameData.getVerticalConditions()[index];
 			_gameGrid.addVerticalConditionAt(vItem[0] == 0, vItem[1], vItem[2], index);
+			_gameGrid.removeVerticalOtherClue();
 		}
 		
-		public function showHorizontalCondition(index:int):void
+		public function restoreHorizontalCondition(index:int):void
 		{
 			var hItem:Array = _gameData.getHorizontalCondition()[index];
 			_gameGrid.addHorizontalConditionAt(hItem[0] == 1, hItem[1], hItem[2], hItem[3], hItem[4], index);
+			_gameGrid.removeHorizontalOtherClue();
 		}
 		
 		public function showImage(row:int, column:int, index:int):void
@@ -104,6 +106,9 @@ package game
 			addVerticalConditions();
 			addHorizontalConditions();
 			
+			initVerticalOtherClues();
+			initHorizontalOtherClues();
+			
 			_actionWatcher = new ActionsWatcher(this);
 			_gameGrid.startTimer();
 		}
@@ -137,6 +142,22 @@ package game
 			for (var j:int = horizontalConditions.length; j < HORIZONTAL_CONDITIONS_COUNT; ++j)
 			{
 				_gameGrid.addEmptyHorizontalCondition();
+			}
+		}
+		
+		private function initVerticalOtherClues():void
+		{
+			for (var i:int = 0; i < VERTICAL_CONDITIONS_COUNT; ++i)
+			{
+				_gameGrid.addEmptyVerticalOtherClue();
+			}
+		}
+		
+		private function initHorizontalOtherClues():void
+		{
+			for (var i:int = 0; i < HORIZONTAL_CONDITIONS_COUNT; ++i)
+			{
+				_gameGrid.addEmptyHorizontalOtherClue();
 			}
 		}
 		
@@ -184,6 +205,22 @@ package game
 		private function onUndoSelected(event:GameEvent):void
 		{
 			_actionWatcher.revertLastAction();
+		}
+		
+		private function onConditionRemoved(event:ConditionRemovedEvent):void
+		{
+			if (event.isVerticalCondition)
+			{
+				var vItem:Array = _gameData.getVerticalConditions()[event.conditionIndex];
+				_gameGrid.addVerticalOtherClue(vItem[0] == 0, vItem[1], vItem[2]);
+			}
+			else
+			{
+				var hItem:Array = _gameData.getHorizontalCondition()[event.conditionIndex];
+				_gameGrid.addHorizontalOtherClue(hItem[0] == 1, hItem[1], hItem[2], hItem[3], hItem[4]);
+			}
+			
+			redispatchEvent(event);
 		}
 		
 		private function redispatchEvent(event:Event):void

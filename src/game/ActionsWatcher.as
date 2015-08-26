@@ -36,11 +36,11 @@ package game
 					var concreteAction:ConditionRemovedEvent = action as ConditionRemovedEvent;
 					if (concreteAction.isVerticalCondition)
 					{
-						_game.showVerticalCondition(concreteAction.conditionIndex);
+						_game.restoreVerticalCondition(concreteAction.conditionIndex);
 					}
 					else
 					{
-						_game.showHorizontalCondition(concreteAction.conditionIndex);
+						_game.restoreHorizontalCondition(concreteAction.conditionIndex);
 					}
 					break;
 				}
