@@ -6,9 +6,11 @@
 				xmlns:menu="game.menu.*"
 				xmlns:rules="game.rules.*"
 				resize="resize()"
+				creationComplete="onPlayButtonClicked()"
 				width="807" height="395">
 	<menu:Menu width="100%" height="100%"
 			   playButtonClicked="onPlayButtonClicked()"
+			   visible="false"
 			   howToPlayClicked="rulesContainer.visible = true"/>
 	<rules:RulesContainer id="rulesContainer" visible="false"
 						  width="60%" height="100%"
