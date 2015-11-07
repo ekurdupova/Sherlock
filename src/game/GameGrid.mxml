@@ -14,12 +14,14 @@
 	<game:GameTimer id="timer" x="{mainBoard.x + mainBoard.width - timer.width}" y="{mainBoard.y + mainBoard.height + 0.021*height}"/>
 	<game:Button id="fullScreen" labelText="Full Screen" y="{timer.y}" click="onFullScreenClick()"/>
 	<game:Button id="undo" labelText="Undo" y="{timer.y}"  x="{fullScreen.x + fullScreen.width + 0.0052*width}" click="onUndoSelected()"/>
-	<game:Button id="otherClues" labelText="Other clues" y="{timer.y}" x="{undo.x + undo.width + 0.0052*width}" click="onOtherCluesSelected()"/>
+	<game:Button id="hint" labelText="Hint"  y="{timer.y}" x="{undo.x + undo.width + 0.0052*width}" click="onHintSelected()"/>
+	<game:Button id="otherClues" labelText="Other clues" y="{timer.y}" x="{hint.x + hint.width + 0.0052*width}" click="onOtherCluesSelected()"/>
 	<!--game:Button id="puzzleNumberLabel" labelText="{_puzzleNumber.toString()}" x="{fullScreen.x + fullScreen.width + 0.0052*width}" y="{timer.y}"/-->
 	
 	<mx:Metadata>
 		[Event(name="imageSelected", type="game.events.ImageSelectedEvent")]
 		[Event(name="undoSelected", type="game.events.GameEvent")]
+		[Event(name="hintSelected", type="game.events.GameEvent")]
 		[Event(name="conditionRemoved", type="game.events.ConditionRemovedEvent")]
 		[Event(name="imageHided", type="game.events.ImageHidedEvent")]
 	</mx:Metadata>
@@ -45,6 +47,7 @@
 				timer.resize(appWidth, appHeight);
 				fullScreen.resize(appWidth, appHeight);
 				undo.resize(appWidth, appHeight);
+				hint.resize(appWidth, appHeight);
 				otherClues.resize(appWidth, appHeight);
 //				puzzleNumberLabel.resize(appWidth, appHeight);
 			}
@@ -57,6 +60,11 @@
 			private function onUndoSelected():void
 			{
 				this.dispatchEvent(new GameEvent(GameEvent.UNDO));
+			}
+			
+			private function onHintSelected():void
+			{
+				this.dispatchEvent(new GameEvent(GameEvent.HINT));
 			}
 			
 			private function onOtherCluesSelected():void
@@ -182,12 +190,18 @@
 				return _puzzleNumber;
 			}
 			
+			public function get mainBoardState():Array
+			{
+				return mainBoard.state;
+			}
+			
 			private function onFullScreenClick():void
 			{
 				FlexGlobals.topLevelApplication.percentWidth = 100;
 				FlexGlobals.topLevelApplication.percentHeight = 100;
 				FlexGlobals.topLevelApplication.stage.displayState = StageDisplayState.FULL_SCREEN;
 			}
+			
 		]]>
 	</mx:Script>
 </mx:Canvas>

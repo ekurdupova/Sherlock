@@ -8,6 +8,8 @@ package game
 	import game.events.GameEvent;
 	import game.events.ImageHidedEvent;
 	import game.events.ImageSelectedEvent;
+	import game.hinter.Hinter;
+	import game.hinter.IHint;
 	
 	import mx.controls.Alert;
 	import mx.events.CloseEvent;
@@ -24,6 +26,7 @@ package game
 		
 		private var _selectedImagesCount:int = 0;
 		private var _gameCalculator:GameCalculator;
+		private var _hinter:Hinter;
 		private var _puzzleNumber:int;
 		
 		public function Game()
@@ -31,6 +34,7 @@ package game
 			var gameGenerator:GameGenerator = new GameGenerator();
 			_puzzleNumber = Math.random()*100000;
 			_gameData = gameGenerator.generateGame(_puzzleNumber);
+			_hinter = new Hinter();
 		}
 		
 		public function draw(scene:DisplayObjectContainer):void
@@ -40,6 +44,7 @@ package game
 			_gameGrid.addEventListener(FlexEvent.CREATION_COMPLETE, onGameGridCreationComplete);
 			_gameGrid.addEventListener(ImageSelectedEvent.IMAGE_SELECTED, onImageSelected);
 			_gameGrid.addEventListener(GameEvent.UNDO, onUndoSelected);
+			_gameGrid.addEventListener(GameEvent.HINT, onHintSelected);
 			_gameGrid.addEventListener(ConditionRemovedEvent.CONDITION_REMOVED, onConditionRemoved);
 			_gameGrid.addEventListener(ImageHidedEvent.IMAGE_HIDED, redispatchEvent);
 			scene.addChild(_gameGrid);
@@ -205,6 +210,14 @@ package game
 		private function onUndoSelected(event:GameEvent):void
 		{
 			_actionWatcher.revertLastAction();
+		}
+		
+		private function onHintSelected(event:GameEvent):void
+		{
+			var hint:IHint = _hinter.getHint(_gameGrid.mainBoardState, _gameData.getSolution());
+			
+			if (hint != null)
+				hint.highlightCeil();
 		}
 		
 		private function onConditionRemoved(event:ConditionRemovedEvent):void

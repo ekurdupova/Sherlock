@@ -63,6 +63,7 @@
 				getColumnByNumber(column).showImage(row, index);
 			}
 			
+			// TODO: use getColumnByMunber
 			public function getSelectedImages():Array
 			{
 				var result:Array = new Array(6);
@@ -77,6 +78,7 @@
 				return result;
 			}
 			
+			// TODO: use getColumnByMunber
 			public function resize(appWidth:Number, appHeight:Number):void
 			{
 				_appWidth = appWidth;
@@ -88,6 +90,18 @@
 				column3.resize(appWidth, appHeight);
 				column4.resize(appWidth, appHeight);
 				column5.resize(appWidth, appHeight);
+			}
+			
+			public function get state():Array
+			{
+				var result:Array = new Array(6);
+				
+				for (var i:int = 0; i < 6; ++i)
+				{
+					result[i] = getColumnByNumber(i).state;
+				}
+				
+				return result;
 			}
 			
 			private function hideImage(imgNumber:int):Array

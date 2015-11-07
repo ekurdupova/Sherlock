@@ -118,6 +118,17 @@
 				resizeImage();
 				resizeImagesInRow();
 			}
+			
+			public function get state():CeilState
+			{
+				var showedImages:Array = new Array(6);
+				for (var i:int = 0; i < 6; ++i)
+				{
+					showedImages[i] = imageContainer.visible && imageContainer.getChildAt(i).visible;
+				}
+				
+				return new CeilState(_selectedImgNumber, showedImages);
+			}
 		
 			protected function addImageToRow(cls:Class, number:int):void
 			{

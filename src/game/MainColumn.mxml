@@ -82,6 +82,18 @@
 				characterCeil.resize(appWidth, appHeight);
 			}
 			
+			public function get state():Array
+			{
+				var result:Array = new Array(6);
+				
+				for (var i:int = 0; i < 6; ++i)
+				{
+					result[i] = getCeilByNumber(i).state;
+				}
+				
+				return result;
+			}
+			
 			private function getCeilByNumber(num:int):Ceil
 			{
 				var ceil:Ceil;

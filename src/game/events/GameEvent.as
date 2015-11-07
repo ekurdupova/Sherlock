@@ -7,6 +7,7 @@ package game.events
 		public static const EXIT:String = "exit";
 		public static const NEW_GAME:String = "newGame";
 		public static const UNDO:String = "undoSelected";
+		public static const HINT:String = "hintSelected";
 		public static const UNKNOWN_ACTION:String = "unknownAction";
 		
 		public function GameEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false)
