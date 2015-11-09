@@ -20,13 +20,17 @@ package game.hinter
 		{
 			var result:IHint = checkSelectedImages(mainBoardState, solution);
 			
+			if (result == null)
+			{
+				result = checkHiddenImages(mainBoardState, solution);
+			}
+			
 			return result;
 		}
 		
 		private function checkSelectedImages(mainBoardState:Array, solution:Array):IHint
 		{
 			for (var i:int = 0; i < 6; ++i)
-			{
 				for (var j:int = 0; j < 6; ++j)
 				{
 					var ceilState:CeilState = mainBoardState[i][j];
@@ -36,8 +40,22 @@ package game.hinter
 						return new WrongImageSelectedHint(i, j);
 					}
 				}
-			}
 			
+			return null;
+		}
+		
+		private function checkHiddenImages(mainBoardState:Array, solution:Array):IHint
+		{
+			for (var i:int = 0; i < 6; ++i)
+				for (var j:int = 0; j < 6; ++j)
+				{
+					var ceilState:CeilState = mainBoardState[i][j];
+					if (ceilState.selectedImgNumber == -1 &&
+						!ceilState.showedImages[solution[j][i] % 10])
+					{
+						return new WrongImageHiddenHint(i, j);
+					}
+				}
 			return null;
 		}
 	}

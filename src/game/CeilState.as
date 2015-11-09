@@ -15,5 +15,10 @@ package game
 		{
 			return _selectedImgNumber;
 		}
+		
+		public function get showedImages():Array
+		{
+			return _showedImages;
+		}
 	}
 }
