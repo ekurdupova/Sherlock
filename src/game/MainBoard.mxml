@@ -63,7 +63,7 @@
 				getColumnByNumber(column).showImage(row, index);
 			}
 			
-			// TODO: use getColumnByMunber
+			// TODO: use getColumnByNumber
 			public function getSelectedImages():Array
 			{
 				var result:Array = new Array(6);
@@ -78,7 +78,7 @@
 				return result;
 			}
 			
-			// TODO: use getColumnByMunber
+			// TODO: use getColumnByNumber
 			public function resize(appWidth:Number, appHeight:Number):void
 			{
 				_appWidth = appWidth;
@@ -102,6 +102,11 @@
 				}
 				
 				return result;
+			}
+			
+			public function getCeil(row:int, column:int):Ceil
+			{
+				return getColumnByNumber(column).getCeil(row);
 			}
 			
 			private function hideImage(imgNumber:int):Array

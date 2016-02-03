@@ -214,7 +214,7 @@ package game
 		
 		private function onHintSelected(event:GameEvent):void
 		{
-			var hint:IHint = _hinter.getHint(_gameGrid.mainBoardState, _gameData.getSolution());
+			var hint:IHint = _hinter.getHint(_gameGrid.mainBoardState, _gameData.getSolution(), _gameGrid.mainBoard);
 			
 			if (hint != null)
 				hint.highlightCeil();

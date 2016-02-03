@@ -94,6 +94,11 @@
 				return result;
 			}
 			
+			public function getCeil(row:int):Ceil
+			{
+				return getCeilByNumber(row);
+			}
+			
 			private function getCeilByNumber(num:int):Ceil
 			{
 				var ceil:Ceil;

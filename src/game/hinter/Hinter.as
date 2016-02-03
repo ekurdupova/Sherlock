@@ -1,6 +1,7 @@
 package game.hinter
 {
 	import game.CeilState;
+	import game.MainBoard;
 
 	public class Hinter
 	{
@@ -16,19 +17,19 @@ package game.hinter
 		{
 		}
 		
-		public function getHint(mainBoardState:Array, solution:Array):IHint
+		public function getHint(mainBoardState:Array, solution:Array, mainBoard:MainBoard):IHint
 		{
-			var result:IHint = checkSelectedImages(mainBoardState, solution);
+			var result:IHint = checkSelectedImages(mainBoardState, solution, mainBoard);
 			
 			if (result == null)
 			{
-				result = checkHiddenImages(mainBoardState, solution);
+				result = checkHiddenImages(mainBoardState, solution, mainBoard);
 			}
 			
 			return result;
 		}
 		
-		private function checkSelectedImages(mainBoardState:Array, solution:Array):IHint
+		private function checkSelectedImages(mainBoardState:Array, solution:Array, mainBoard:MainBoard):IHint
 		{
 			for (var i:int = 0; i < 6; ++i)
 				for (var j:int = 0; j < 6; ++j)
@@ -37,14 +38,14 @@ package game.hinter
 					if (ceilState.selectedImgNumber != -1 &&
 						ceilState.selectedImgNumber != solution[j][i])
 					{
-						return new WrongImageSelectedHint(i, j);
+						return new WrongImageSelectedHint(i, j, mainBoard.getCeil(j, i));
 					}
 				}
 			
 			return null;
 		}
 		
-		private function checkHiddenImages(mainBoardState:Array, solution:Array):IHint
+		private function checkHiddenImages(mainBoardState:Array, solution:Array, mainBoard:MainBoard):IHint
 		{
 			for (var i:int = 0; i < 6; ++i)
 				for (var j:int = 0; j < 6; ++j)
@@ -53,7 +54,7 @@ package game.hinter
 					if (ceilState.selectedImgNumber == -1 &&
 						!ceilState.showedImages[solution[j][i] % 10])
 					{
-						return new WrongImageHiddenHint(i, j);
+						return new WrongImageHiddenHint(i, j, mainBoard.getCeil(j, i));
 					}
 				}
 			return null;
